@@ -163,7 +163,7 @@ recommender = als_model.fit(spark_df)
 # Case study group score will be computed in the following way:
 #    - Our prediction file will be used to extract, for each user, the 5% most highly predicted movies
 #    - The mean of the actual ratings of those movies (saved in a hidden testing set) will be computed
-#    - Group will the highest mean wins
+#    - Group with the highest mean wins
 
 data_requests = pd.read_csv('requests.csv')
 data_requests_spark = spark.createDataFrame(data_requests)
@@ -171,7 +171,7 @@ data_requests_spark = spark.createDataFrame(data_requests)
 # Generating predictions for user-movie combinations in 'requests.csv'
 data_requests_spark_tr = recommender.transform(data_requests_spark)
 
-# Display first 5 rows of user-movie combinations in 'requests.csv' with generated predictions
+# Display the first 5 rows of user-movie combinations in 'requests.csv' with generated predictions
 data_requests_spark_tr.take(5)
 
 # Transforming the dataset to Pandas dataframe and renaming prediction column to 'rating'
