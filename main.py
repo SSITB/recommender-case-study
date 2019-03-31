@@ -40,7 +40,9 @@ plt.scatter(dataKmeans.iloc[:,0],dataKmeans.iloc[:,1],c=labels)
 silhouette_score(dataKmeans, labels, metric='euclidean') #0.78
 
 
-# Transforming the dataset into wide format sparse matrix which will contain all user-movie combinations
+# Transforming the dataset from long format into wide format sparse matrix 
+# This matrix will contain all user-movie combinations and we will fill in the missing values with 
+# the average rating given to a movie by the users in the same age group
 data_matrix_pd = pd.pivot_table(data,
                                 values='rating', 
                                 index=['user'], 
@@ -70,7 +72,7 @@ for j in range(data_matrix_merged.shape[1]):
     data_matrix_merged.iloc[:,j]=data_matrix_merged.iloc[:,j].fillna(
                                             data_matrix_merged.iloc[:,j].mean())
     
-#Convert the wide matrix into long format suitable for ALS model
+#Convert the wide matrix back into long format suitable for ALS model
 data_matrix_merged = data_matrix_merged.drop('label',axis=1)
 data_matrix_long=data_matrix_merged.unstack().reset_index()
 data_matrix_long.rename(columns ={'level_0': 'movie',
@@ -170,9 +172,6 @@ data_requests_spark = spark.createDataFrame(data_requests)
 
 # Generating predictions for user-movie combinations in 'requests.csv'
 data_requests_spark_tr = recommender.transform(data_requests_spark)
-
-# Display the first 5 rows of user-movie combinations in 'requests.csv' with generated predictions
-data_requests_spark_tr.take(5)
 
 # Transforming the dataset to Pandas dataframe and renaming prediction column to 'rating'
 data_requests_spark_pd = data_requests_spark_tr.toPandas()
